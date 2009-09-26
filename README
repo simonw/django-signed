@@ -18,7 +18,7 @@ The mailing list discussion is here:
 TODO:
 
  - Expose a low level function for directly generating a signature
- - sign and unsign should allow the extra_key argument
+ - sign and unsign should accept the extra_key argument
  - Add support for expiring signatures
  - Try using a class instead of functions, as suggested by Johannes Dollinger
  - Cookie signing functions

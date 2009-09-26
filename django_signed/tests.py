@@ -23,6 +23,7 @@ class TestSignUnsign(TestCase):
         )
     
     def sign_is_reversible(self):
+        "sign/unsign should be reversible against any bytestring"
         examples = (
             'q;wjmbk;wkmb',
             '3098247529087',
@@ -35,6 +36,7 @@ class TestSignUnsign(TestCase):
             self.assertEqual(example, signed.unsign(utils.sign(example)))
     
     def unsign_detects_tampering(self):
+        "unsign should raise an exception if the value has been tampered with"
         value = 'Another string'
         signed_value = signed.sign(value)
         transforms = (
@@ -49,9 +51,10 @@ class TestSignUnsign(TestCase):
                 signed.BadSignature, signed.unsign, transform(signed_value)
             )
 
-class TestEncodeDecodeObject(TestCase):
+class TestDumpsLoad(TestCase):
     
-    def test_encode_decode(self):
+    def test_dumps_loads(self):
+        "dumps and loads should work reversibly for any picklable object"
         objects = (
             ('a', 'tuple'),
             'a string',
@@ -63,6 +66,7 @@ class TestEncodeDecodeObject(TestCase):
             self.assertEqual(o, signed.loads(signed.dumps(o)))
     
     def test_decode_detects_tampering(self):
+        "loads should raise exception for tampered objects"
         transforms = (
             lambda s: s.upper(),
             lambda s: s + 'a',
