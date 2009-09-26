@@ -1,0 +1,16 @@
+django_signed
+=============
+
+This project demonstrates a proposed signing API for Django. You can run the 
+test suite like so:
+
+    cd examples
+    ./manage.py test
+
+The API is under heavy development. It is described in more detail here:
+
+    http://code.djangoproject.com/wiki/Signing
+
+The mailing list discussion is here:
+
+    http://groups.google.com/group/django-developers/browse_thread/thread/133509246caf1d91
