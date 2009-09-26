@@ -14,3 +14,12 @@ The API is under heavy development. It is described in more detail here:
 The mailing list discussion is here:
 
     http://groups.google.com/group/django-developers/browse_thread/thread/133509246caf1d91
+
+TODO:
+
+ - Expose a low level function for directly generating a signature
+ - sign and unsign should allow the extra_key argument
+ - Add support for expiring signatures
+ - Try using a class instead of functions, as suggested by Johannes Dollinger
+ - Cookie signing functions
+ - Middleware that illustrates the proposed request cookie signing API
