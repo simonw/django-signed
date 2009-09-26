@@ -39,6 +39,10 @@ from django.conf import settings
 from django.utils.hashcompat import sha_constructor
 import hmac
 
+def signature(value, key = None, extra_key = ''):
+    "Generate a secure signature for a value"
+    return base64_hmac(value, (key or settings.SECRET_KEY) + extra_key)
+
 def dumps(obj, key = None, compress = False, extra_key = ''):
     """
     Returns URL-safe, sha1 signed base64 compressed pickle. If key is 
@@ -94,23 +98,19 @@ class BadSignature(ValueError):
     # basically the correct semantics.
     pass
 
-def sign(value, key = None):
+def sign(value, key = None, extra_key = ''):
     if isinstance(value, unicode):
         raise TypeError, \
             'sign() needs bytestring, not unicode: %s' % repr(value)
-    if key is None:
-        key = settings.SECRET_KEY
-    return value + '.' + base64_hmac(value, key)
+    return value + '.' + signature(value, key=key, extra_key=extra_key)
 
-def unsign(signed_value, key = None):
+def unsign(signed_value, key = None, extra_key = ''):
     if isinstance(signed_value, unicode):
         raise TypeError, 'unsign() needs bytestring, not unicode'
-    if key is None:
-        key = settings.SECRET_KEY
     if not '.' in signed_value:
         raise BadSignature, 'Missing sig (no . found in value)'
     value, sig = signed_value.rsplit('.', 1)
-    if base64_hmac(value, key) == sig:
+    if signature(value, key=key, extra_key=extra_key) == sig:
         return value
     else:
         raise BadSignature, 'Signature failed: %s' % sig

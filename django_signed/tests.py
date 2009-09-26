@@ -3,6 +3,35 @@ import signed
 
 from unittest import TestCase
 
+class TestSignature(TestCase):
+    
+    def test_signature(self):
+        "signature() function should generate a signature"
+        for s in (
+            'hello',
+            '3098247:529:087:',
+            u'\u2019'.encode('utf8'),
+        ):
+            self.assertEqual(
+                signed.signature(s),
+                signed.base64_hmac(s, settings.SECRET_KEY)
+            )
+    
+    def test_signature_optional_arguments(self):
+        "signature(value, key=..., extra_key=...) should work"
+        self.assertEqual(
+            signed.signature('hello', key='this-is-the-key'),
+            signed.base64_hmac('hello', 'this-is-the-key')
+        )
+        self.assertEqual(
+            signed.signature('hello', key='this-is-the-key', extra_key='X'),
+            signed.base64_hmac('hello', 'this-is-the-keyX')
+        )
+        self.assertEqual(
+            signed.signature('hello', extra_key='X'),
+            signed.base64_hmac('hello', settings.SECRET_KEY + 'X')
+        )
+
 class TestSignUnsign(TestCase):
 
     def test_sign_unsign_no_unicode(self):
