@@ -1,5 +1,5 @@
-from django_openid import signed
 from django.conf import settings
+import signed
 
 from unittest import TestCase
 
