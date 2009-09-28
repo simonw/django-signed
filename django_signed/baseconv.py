@@ -52,6 +52,6 @@ class BaseConverter(object):
 bin = BaseConverter('01')
 hexconv = BaseConverter('0123456789ABCDEF')
 base62 = BaseConverter(
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz'
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 )
 
