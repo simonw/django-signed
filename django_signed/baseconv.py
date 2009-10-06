@@ -4,9 +4,9 @@ Convert numbers from base 10 integers to base X strings and back again.
 Sample usage:
 
 >>> base20 = BaseConverter('0123456789abcdefghij')
->>> base20.from_decimal(1234)
+>>> base20.from_int(1234)
 '31e'
->>> base20.to_decimal('31e')
+>>> base20.to_int('31e')
 1234
 """
 
@@ -16,10 +16,10 @@ class BaseConverter(object):
     def __init__(self, digits):
         self.digits = digits
     
-    def from_decimal(self, i):
+    def from_int(self, i):
         return self.convert(i, self.decimal_digits, self.digits)
     
-    def to_decimal(self, s):
+    def to_int(self, s):
         return int(self.convert(s, self.digits, self.decimal_digits))
     
     def convert(number, fromdigits, todigits):
@@ -51,6 +51,7 @@ class BaseConverter(object):
 
 bin = BaseConverter('01')
 hexconv = BaseConverter('0123456789ABCDEF')
+base36 = BaseConverter('0123456789abcdefghijklmnopqrstuvwxyz')
 base62 = BaseConverter(
     '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 )

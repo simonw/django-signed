@@ -113,10 +113,10 @@ class TestDumpsLoad(TestCase):
 class TestBaseConv(TestCase):
     
     def test_baseconv(self):
-        from baseconv import bin, hexconv, base62
+        from baseconv import bin, hexconv, base36, base62
         nums = [-10 ** 10, 10 ** 10] + range(-100, 100)
-        for convertor in [bin, hexconv, base62]:
+        for convertor in [bin, hexconv, base36, base62]:
             for i in nums:
                 self.assertEqual(
-                    i, convertor.to_decimal(convertor.from_decimal(i))
+                    i, convertor.to_int(convertor.from_int(i))
                 )
