@@ -85,7 +85,7 @@ class TestDumpsLoad(TestCase):
     def test_dumps_loads(self):
         "dumps and loads should work reversibly for any picklable object"
         objects = (
-            ('a', 'tuple'),
+            ['a', 'list'],
             'a string',
             u'a unicode string \u2019',
             {'a': 'dictionary'},
