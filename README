@@ -21,3 +21,5 @@ TODO:
  - Try using a class instead of functions, as suggested by Johannes Dollinger
  - Cookie signing functions
  - Middleware that illustrates the proposed request cookie signing API
+ - Support key migration from an OLD_SECRET_KEY to the current one
+ - Ditch dumps/loads on pickled data, use safe serialization e.g. JSON instead
