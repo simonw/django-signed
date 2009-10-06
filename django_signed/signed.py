@@ -54,7 +54,7 @@ def dumps(obj, key = None, compress = False, extra_key = ''):
     extra_key can be used to further salt the hash, in case you're worried 
     that the NSA might try to brute-force your SHA-1 protected secret.
     """
-    json = simplejson.dumps(obj)
+    json = simplejson.dumps(obj, separators=(',', ':'))
     is_compressed = False # Flag for if it's been compressed or not
     if compress:
         import zlib # Avoid zlib dependency unless compress is being used
