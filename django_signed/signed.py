@@ -4,7 +4,7 @@ Functions for creating and restoring url-safe signed JSON objects.
 The format used looks like this:
 
 >>> signed.dumps("hello")
-'UydoZWxsbycKcDAKLg.AfZVu7tE6T1K1AecbLiLOGSqZ-A'
+'ImhlbGxvIg.RjVSUCt6S64WBilMYxG89-l0OA8'
 
 There are two components here, separatad by a '.'. The first component is a 
 URLsafe base64 encoded JSON of the object passed to dumps(). The second 
@@ -13,18 +13,18 @@ component is a base64 encoded hmac/SHA1 hash of "$first_component.$secret"
 signed.loads(s) checks the signature and returns the deserialised object. 
 If the signature fails, a BadSignature exception is raised.
 
->>> signed.loads('UydoZWxsbycKcDAKLg.AfZVu7tE6T1K1AecbLiLOGSqZ-A')
-'hello'
->>> signed.loads('UydoZWxsbycKcDAKLg.AfZVu7tE6T1K1AecbLiLOGSqZ-A-modified')
+>>> signed.loads("ImhlbGxvIg.RjVSUCt6S64WBilMYxG89-l0OA8")
+u'hello'
+>>> signed.loads("ImhlbGxvIg.RjVSUCt6S64WBilMYxG89-l0OA8-modified")
 ...
-BadSignature: Signature failed: AfZVu7tE6T1K1AecbLiLOGSqZ-A-modified
+BadSignature: Signature failed: RjVSUCt6S64WBilMYxG89-l0OA8-modified
 
 You can optionally compress the JSON prior to base64 encoding it to save 
 space, using the compress=True argument. This checks if compression actually
 helps and only applies compression if the result is a shorter string:
 
->>> signed.dumps(range(1, 10), compress=True)
-'.eJzTyCkw4PI05Er0NAJiYyA2AWJTIDYDYnMgtgBiS65EPQDQyQme.EQpzZCCMd3mIa4RXDGnAuMCCAx0'
+>>> signed.dumps(range(1, 20), compress=True)
+'.eJwFwcERACAIwLCF-rCiILN47r-GyZVJsNgkxaFxoDgxcOHGxMKD_T7vhAml.oFq6lAAEbkHXBHfGnVX7Qx6NlZ8'
 
 The fact that the string is compressed is signalled by the prefixed '.' at the
 start of the base64 JSON.
