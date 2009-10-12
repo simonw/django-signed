@@ -116,3 +116,97 @@ def unsign(signed_value, key = None, extra_key = ''):
 
 def base64_hmac(value, key):
     return encode(hmac.new(key, value, sha_constructor).digest())
+
+
+# BELOW: First attempt at turning this lot in to a class
+
+class Signer(object):
+    def __init__(self, key = None, previous_key = None):
+        self.key = key or settings.SECRET_KEY
+        self.previous_key = previous_key or getattr(
+            settings, 'PREVIOUS_SECRET_KEY', None
+        )
+
+    def signature(self, value, key = None, extra_key = ''):
+        key = key or self.key
+        return base64_hmac(value, (key or settings.SECRET_KEY) + extra_key)
+
+    def serialize(self, obj):
+        return simplejson.dumps(obj, separators=(',', ':'))
+
+    def unserialize(self, bytes):
+        return simplejson.loads(bytes)
+
+    def asciiencode(self, s):
+        return base64.urlsafe_b64encode(s).strip('=')
+
+    def asciidecode(self, s):
+        return base64.urlsafe_b64decode(s + '=' * (len(s) % 4))
+
+    def dumps(self,obj, key = None, compress = False, extra_key = ''):
+        """
+        Returns URL-safe, sha1 signed base64 compressed JSON string. If key is 
+        None, settings.SECRET_KEY is used instead.
+
+        If compress is True (not the default) checks if compressing using zlib can
+        save some space. Prepends a '.' to signify compression. This is included 
+        in the signature, to protect against zip bombs.
+
+        extra_key can be used to further salt the hash, in case you're worried 
+        that the NSA might try to brute-force your SHA-1 protected secret.
+        """
+        key = key or self.key
+        serialized = self.serialize(obj)
+
+        is_compressed = False # Flag for if it's been compressed or not
+        if compress:
+            import zlib # Avoid zlib dependency unless compress is being used
+            compressed = zlib.compress(serialized)
+            if len(compressed) < (len(serialized) - 1):
+                serialized = compressed
+                is_compressed = True
+        base64d = self.asciiencode(serialized).strip('=')
+        if is_compressed:
+            base64d = '.' + base64d
+        return self.sign(base64d, key + extra_key)
+
+    def loads(self, s, key = None, extra_key = ''):
+        "Reverse of dumps(), raises ValueError if signature fails"
+        key = key or self.key
+        if isinstance(s, unicode):
+            s = s.encode('utf8') # base64 works on bytestrings, not on unicodes
+        try:
+            asciid = self.unsign(s, key + extra_key)
+        except ValueError:
+            raise
+        decompress = False
+        if asciid[0] == '.':
+            # It's compressed; uncompress it first
+            asciid = asciid[1:]
+            decompress = True
+        bytes = self.asciidecode(asciid)
+        if decompress:
+            import zlib
+            bytes = zlib.decompress(bytes)
+        return self.unserialize(bytes)
+
+    def sign(self, value, key = None, extra_key = ''):
+        key = key or self.key
+        if isinstance(value, unicode):
+            raise TypeError, \
+                'sign() needs bytestring, not unicode: %s' % repr(value)
+        return value + '.' + self.signature(value, key=key, extra_key=extra_key)
+
+    def unsign(self, signed_value, key = None, extra_key = ''):
+        key = key or self.key
+        if isinstance(signed_value, unicode):
+            raise TypeError, 'unsign() needs bytestring, not unicode'
+        if not '.' in signed_value:
+            raise BadSignature, 'Missing sig (no . found in value)'
+        value, sig = signed_value.rsplit('.', 1)
+        if self.signature(value, key=key, extra_key=extra_key) == sig:
+            return value
+        else:
+            raise BadSignature, 'Signature failed: %s' % sig
+
+
